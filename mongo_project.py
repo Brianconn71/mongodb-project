@@ -33,7 +33,7 @@ def show_menu():
 #helper function DRY
 def get_record():
     print("")
-    first = input("Enter Firsst Name > ")
+    first = input("Enter First Name > ")
     last = input("Enter Last Name > ")
 
     try:
@@ -81,6 +81,54 @@ def find_record():
     doc = get_record()
     if doc:
         print("")
+        for key, value in doc.items():
+            #id is the default key for the items in the database
+            if key != "_id":
+                print(key.capitalize() + ": " + value.capitalize())
+
+
+def edit_record():
+    doc = get_record()
+    if doc:
+        update_doc = {}
+        print("")
+        for k,v in doc.items():
+            if k != "_id":
+                update_doc[k] = input(k.capitalize() + " [" + v + " ] > ")
+
+                if update_doc[k] == "":
+                    update_doc[k] = v
+        try:
+            coll.update_one(doc, {"$set": update_doc})
+            print("")
+            print("Document updated")
+        except:
+            print("Error accessing the database")
+
+
+def delete_record():
+    doc = get_record()
+    if doc:
+        print("")
+        for k,v in doc.items():
+            if k != "_id":
+                print(k.capitalize() + ": " + v.capitalize())
+
+        print("")
+        confirmation = input("is this what you want? \Y or N > ")
+        print("")
+
+        if confirmation.lower() == "y":
+            try:
+                coll.remove(doc)
+                print("Document deleted")
+            except:
+                print("Error accessing database")
+        else:
+            print("document not deleted")
+    
+
+
 
 
 def main_loop():
@@ -89,11 +137,11 @@ def main_loop():
         if option == "1":
             add_record()
         elif option == "2":
-            print("You have selected option 2")
+            find_record()
         elif option == "3":
-            print("You have selected option 3")
+            edit_record()
         elif option == "4":
-            print("You have selected option 4")
+            delete_record()
         elif option == "5":
             conn.close()
             break
